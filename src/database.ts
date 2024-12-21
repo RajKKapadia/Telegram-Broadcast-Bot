@@ -1,6 +1,7 @@
 import sqlite3 from "sqlite3"
 import { Database, open } from "sqlite"
 import path from "path"
+import fs from "fs/promises"
 
 // Define User type
 interface TelegramUser {
@@ -17,14 +18,17 @@ interface UpdateUserDto extends Partial<Omit<TelegramUser, "telegramId">> { }
 class TelegramUserService {
     private db: Database | null = null
     private readonly dbPath: string
+    private readonly dataDir: string
 
     constructor() {
         // Create database in root directory
+        this.dataDir = path.join(process.cwd(), 'data')
         this.dbPath = process.env.DB_PATH || path.join(process.cwd(), "data", "telegram_users.sqlite")
     }
 
     async initialize(): Promise<void> {
         try {
+            await fs.mkdir(this.dataDir, { recursive: true })
             this.db = await open({
                 filename: this.dbPath,
                 driver: sqlite3.Database
