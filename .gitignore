@@ -1,3 +1,3 @@
 node_modules/
 .env
-telegram_users.sqlite
+data/
